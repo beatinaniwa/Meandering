@@ -1,0 +1,5 @@
+bellig = matrix(c(200, 600, 350, 450), nrow=2, ncol=2, byrow=TRUE)
+rownames(bellig) <- c("pos", "sndord")
+colnames(bellig) <- c("False", "True")
+bellig <- as.table(bellig)
+chisq.test(bellig)

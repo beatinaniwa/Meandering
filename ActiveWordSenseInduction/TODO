@@ -1,0 +1,18 @@
+1) Use labelled data to prime the clusters in a DPMM and then feed it the
+unlabelled data to see what gets learned and determine how much support the
+evidence in the corpus gives to the actual labels.
+
+Evaluation Idea: We'ere just exploring the corpus and evaluating how well the
+labels are supported by the dataset.  So we're not exactly shooting for better
+accuracy in Word Sense Induction but instead want to quantify what's in the
+corpus in comparison to what we think exists.
+
+2) Attempt to perform co-training using supervised models and the small tagged
+dataset.  The idea behind this is to see how well we can learn with multiple
+models and only a small training set.  I don't really know what to expect here,
+but it could be interesting.  
+
+Evaluation Idea: NONE
+
+
+Issues for both setups: How The Fuck Do I Evaluate It?

@@ -1,0 +1,35 @@
+
+R version 2.15.0 (2012-03-30)
+Copyright (C) 2012 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: i686-pc-linux-gnu (32-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> bellig = matrix(c(200, 600, 350, 450), nrow=2, ncol=2, byrow=TRUE)
+> rownames(bellig) <- c("pos", "sndord")
+> colnames(bellig) <- c("False", "True")
+> bellig <- as.table(bellig)
+> chisq.test(bellig)
+
+	Pearson's Chi-squared test with Yates' continuity correction
+
+data:  bellig 
+X-squared = 61.5093, df = 1, p-value = 4.407e-15
+
+> 
+> proc.time()
+   user  system elapsed 
+  0.308   0.020   0.314 
