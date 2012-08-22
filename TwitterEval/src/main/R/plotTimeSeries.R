@@ -1,19 +1,17 @@
 library(ggplot2)
 
-sData <- data.frame(read.table("tweet.archery.particle.split.dat", header=TRUE))
-tData <- data.frame(read.table("tweet.archery.particle.groups.dat", header=TRUE))
+tData <- data.frame(read.table("results/tweet.archery.batch-mean.all.groups.dat", header=TRUE))
+eData <- data.frame(read.table("results/olympics.archery.times.uniq.dat", header=FALSE))
 
-p <- ggplot(tData, aes(x=Time, group=Group, colour=Group)) + 
+#     geom_vline(xintercept=as.numeric(eData$V1)) +
+p <- ggplot(tData, aes(x=Time)) + 
      geom_histogram(binwidth=100) + 
-     geom_vline(xintercept=as.numeric(sData$Time)) +
-     theme_bw()
-ggsave("tweet.archery.particle.partitioned.eps")
+     xlab("") +
+     ylab("") +
+     ylim(0, 50)+
+     theme_bw() +
+     opts(axis.ticks = theme_blank(), 
+          axis.text.x = theme_blank(),
+          axis.text.y = theme_blank())
 
-#tData <- data.frame(read.table("tweet.timeline.batch.groups.dat", header=TRUE))
-#sData <- data.frame(read.table("tweet.timeline.batch.split.dat", header=TRUE))
-
-#p <- ggplot(tData, aes(x=Time, group=Group, colour=Group)) + 
-#     geom_histogram(binwidth=100) + 
-#     geom_vline(xintercept=as.numeric(sData$Time)) +
-#     theme_bw()
-#ggsave("tweet.lakers.batch.partitioned.eps")
+ggsave("tweet.archery.example-partition.pdf")

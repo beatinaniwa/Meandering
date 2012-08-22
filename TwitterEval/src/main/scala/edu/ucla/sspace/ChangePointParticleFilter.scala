@@ -4,7 +4,9 @@ import breeze.numerics.{digamma, lgamma}
 import breeze.linalg.DenseVector
 import breeze.stats.distributions.NegativeBinomial
 
-import math.{abs, exp, log, log10, pow}
+import scala.io.Source
+import scala.math.{abs, exp, log, log10, pow}
+
 
 class ChangePointParticleFilter {
 
@@ -14,7 +16,7 @@ class ChangePointParticleFilter {
                     )
 
     // Fixed hyper parameter setting the number of particles to use.
-    val maxParticles = 100
+    val maxParticles = 5
     // Threshold for dropping particles.  Since we have at most 100 particles, at the worst case, they all have the same normalized weight
     // of 0.01, so this will throw out any below that threshold.
     val threshold = 0.01
@@ -30,7 +32,7 @@ class ChangePointParticleFilter {
 
     // The current Negative Binomial distribution using parameters in theta.
     var h = newNegativeBinomialDist
-    var particleList = List[Particle]( (0l, 1d, DenseVector.zeros[Double](4)) )
+    var particleList = List[Particle]()
     var lastTime = 0l
 
     def newNegativeBinomialDist = new NegativeBinomial(theta(0), theta(1))
@@ -47,14 +49,20 @@ class ChangePointParticleFilter {
         (to_r, to_rho)
     }
 
-    def p(t1: Long, t2: Long) = pow(theta(2), abs(t1 - t2) / theta(3))
+    def p(t1: Long, t2: Long) = {
+        //printf("delta: %d\n", abs(t1-t2))
+        //printf("beta: %f\n", theta(3))
+        pow(theta(2), abs(t1 - t2) / theta(3))
+    }
 
     def f(t: Long, currentChangePoint: Long, previousChangePoint: Long) = {
         val delta = (t - previousChangePoint).toInt
-        if (currentChangePoint == previousChangePoint)
+        val ret = if (currentChangePoint == previousChangePoint)
             (1 - h(delta - 1)) / (1 - h(delta - 2))
         else 
             (h(delta-1) - h(delta-2)) / (1 - h(delta-2))
+        //printf("f: %f\n", ret)
+        ret
     }
 
     def f_gradiant(t: Long, currentChangePoint: Long, previousChangePoint: Long) = {
@@ -85,11 +93,15 @@ class ChangePointParticleFilter {
         }
     }
 
-    def g(currentChangePoint: Long, currentTime: Long, previousTime: Long) =
-        if (currentChangePoint == previousTime)
+    def g(currentChangePoint: Long, currentTime: Long, previousTime: Long) = {
+        val ret = if (currentChangePoint == previousTime) {
             p(previousTime, currentTime)
-        else
+        } else {
             p(currentChangePoint, currentTime) / p(currentChangePoint, previousTime)
+        }
+        //printf("g: %f\n", ret)
+        ret
+    }
 
     def g_gradiant(currentChangePoint: Long, currentTime: Long, previousTime: Long) = {
         val delta = if (currentChangePoint == previousTime)
@@ -108,6 +120,14 @@ class ChangePointParticleFilter {
         DenseVector[Double](nb_params._1, nb_params._2, e_params._1, e_params._2)
 
     def process(time: Long, value: Double) {
+        if (particleList.size == 0) {
+            particleList = List[Particle]( (time, 1d, DenseVector.zeros[Double](4)) )
+            lastTime = time
+        } else
+            addItem(time, value)
+    }
+
+    def addItem(time: Long, value: Double) {
         // For every particle, compute the new weight based on the current data point.  In addition to this, evaluate the f function when
         // considering the newest possible change point and store it.  That value will be used twice so we can save some computation by
         // doing it once and storing it.
@@ -133,11 +153,12 @@ class ChangePointParticleFilter {
         val newParticleList = updatedParticles.map{ case(c_t, w_t, f_t, beta_t) =>
             (c_t, w_t, formTheta( g_gradiant(c_t, time, lastTime), f_gradiant(time, c_t, c_t) ) :* w_t )} :+
             (lastTime, proposedWeight, proposedAlpha)
-
+        println(newParticleList.map(_._2).mkString(" "))
 
         // Now update theta using the weighted alpha vectors computed.
-        theta += (newParticleList.map(_._3).reduce(_+_) / newParticleList.map(_._2).sum) * omega
+        //theta += (newParticleList.map(_._3).reduce(_+_) / newParticleList.map(_._2).sum) * omega
 
+        println(newParticleList.size)
         val selectedParticles = selectParticles(newParticleList)
 
         // Compute the alpha sum once.
@@ -159,6 +180,7 @@ class ChangePointParticleFilter {
             particles
         else {
             val weightSum = particles.map(_._2).sum
+            //println(particles.map(_._2).mkString(" "))
             // Use a shitty selection method for now where we just drop any particles below some threshold.
             // It's possible that this saves no partciles. FIX THAT SHIT.
             particles.filter( _._2 / weightSum >= threshold)
@@ -166,4 +188,14 @@ class ChangePointParticleFilter {
     }
 
     def gamma(x: Double) = exp(lgamma(x))
+}
+
+object ChangePointParticleFilter {
+    def main(args: Array[String]) {
+        val tweetIter = Source.fromFile(args(0)).getLines
+        tweetIter.next
+        val filter = new ChangePointParticleFilter()
+        for (parts <- tweetIter.map(_.split("\\s+")))
+            filter.process(parts(0).toLong/60, 1)
+    }
 }
