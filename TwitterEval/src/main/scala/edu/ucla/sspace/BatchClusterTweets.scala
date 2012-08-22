@@ -48,7 +48,7 @@ object BatchClusterTweets {
         val assignments = Array.fill(tweets.size)(-1)
         // Extract a random set of tweets to act as medians.
         var medianList = selectMedians(tweets, k)
-        var medianUpdated = true
+        var medianUpdated = medianList.size > k
 
         while (medianUpdated && counter > 0) {
             printf("Starting iteration [%d]\n", counter)

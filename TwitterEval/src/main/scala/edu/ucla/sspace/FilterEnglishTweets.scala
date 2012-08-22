@@ -15,8 +15,9 @@ object FilterEnglishTweets {
                                         .map(_.toLowerCase)
                                         .map(_.replaceAll("\\s+", " "))
                                         .map(_.trim)
-                                        .map(_.split("\\s+").toList) //sliding(3, 3).toSet.toList)
+                                        .map(sliding(3, 3).toSet.toList)
         val majorityLabel = classifier.categoryCounts.zipWithIndex.max._2
+        println("Time Tweet")
         for ( (tweet, ti) <- tokenizedTweets.zipWithIndex;
              if classifier.classify(tweet) == majorityLabel)
             printf("%s %s\n", fullTweets(ti)(0), fullTweets(ti)(1))

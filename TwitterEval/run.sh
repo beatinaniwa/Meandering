@@ -1,6 +1,6 @@
 #!/bin/bash
 
-keyWords="archery gymnastics tennis archery judo fencing swimming"
+keyWords="gymnastics tennis archery judo fencing swimming"
 
 run="scala -J-Xmx2g -cp target/TwitterEval-assembly-1.0.0.jar"
 base="edu.ucla.sspace"
@@ -25,7 +25,6 @@ fi
 for word in $keyWords; do
     if [ 0 != 0 ]; then
         echo "skipped"
-    fi
 
     echo "Extracting tweets for $word"
     # Extract the tweets for the word of interest.
@@ -97,5 +96,36 @@ for word in $keyWords; do
         for summary in mean median phrase; do
             $run $base.MergeDaySplitsLists $resultDir/tweet.$word.$method.*.$summary.summary.dat > $resultDir/tweet.$word.$method.all.$summary.summary.csv
         done
+    done
+
+    fi
+
+    # Now do the processing using bayesian change point analysis.  This is
+    # mostly done in R with other codes simply to munge the format into the
+    # expected csv files.
+
+    # First count the number of tweets per minute in the dataset.
+    $run $base.MinuteCounter $resultDir/$tweet.$sport.english.txt \
+                             $resultDir/tweet.$sport.minute-counts.dat
+    # Next extract the change points for the minutes using bcp.
+    R --no-restore --no-save --args \
+        $resultDir/tweet.$sport.minute-counts.dat \
+        $resultDir/tweet.$sport.bcp.mat < src/main/R/ComputeChangePoints.R
+    # Fixup the format so that each datapoint is on it's own line.
+    cat $resultDir/tweet.$sport.bcp.mat | tr " " "\n" > $resultDir/tweet.$sport.bcp.dat
+    # Merge the minute-count data with the change point indicator values.
+    paste $resultDir/tweet.$sport.minute-counts.dat \
+          $resultDir/tweet.$sport.bcp.dat > $resultDir/tweet.$sport.bcp.splits.dat
+    # Convert the changepoint values into group and summary csv files.  We do
+    # this for each of the summary methods available.
+    for summary in mean median phrase; do
+        $run.$base.ProcessBcpSplits joint \
+                                    $resultDir/tweet.$sport.token_basis.dat \
+                                    $resultDir/tweet.$sport.ne_basis.dat \
+                                    $resultDir/tweet.$sport.bcp.groups.dat \
+                                    tweet.$sport.bcp.all.groups.csv \ 
+                                    tweet.$sport.bcp.$summary.summary.csv \
+                                    $summary \
+                                    $resultDir/tweet.$sport.part.*.dat
     done
 done
