@@ -1,6 +1,17 @@
 package edu.ucla.sspace
 
+import scala.io.Source
+
+
 object Util {
+
+    def loadFrame(fileName: String, header: Boolean = true, sep:String = "\\s+") = {
+        val iter = Source.fromFile(fileName).getLines
+        if (header)
+            iter.next
+        iter.map(_.split(sep)).toList
+    }
+
     val rejectTags = Set("#olympics", "#olympics2012", "#olympics12",
                          "#london2012", "#olympicday", "#london")
     val rejectSet = Set("the", "", "to", "rt", "a", "is", "if", "with", 
