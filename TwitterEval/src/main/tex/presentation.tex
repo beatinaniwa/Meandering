@@ -421,7 +421,34 @@ Brilliant performance GBs Larry Godfrey 4th, Alan Wills 42nd, Simon Terry 50th. 
 \end{frame}
 
 \begin{frame}{Selecting the Median/Mean tweet}
- % This one is pretty basic, but describe it anyways.
+\begin{block}{Basic Intuition}
+The representative tweet for a segment also represents the summary of the segment
+\end{block}
+
+\begin{columns}
+
+\begin{column}[1]{5cm}
+The Median Tweet:
+\[
+\begin{array}{l l}
+\argmax_{x_i} \sum_{x_j} sim(x_i, x_j) \\
+\text{s.t.} z_i = z_j \\
+\end{array}
+\]
+\end{column}
+
+\begin{column}[2]{5cm}
+\[
+\begin{array}{l l}
+\mu_k = \frac{\sum_{x_i} x_i}{|\{z_i = z_k\}|} \\
+\argmax_{x_i} sim(x_i, \mu_k) \\
+\text{s.t.} z_i = z_j = z_k \\
+\end{array}
+\]
+\end{column}
+
+\end{columns}
+
 \end{frame}
 
 \begin{frame}{Selection using a phrase graph}
