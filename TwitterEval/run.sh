@@ -101,7 +101,6 @@ for word in $keyWords; do
     R --no-restore --no-save --args \
         $resultDir/tweet.$word.minute-counts.dat \
         $resultDir/tweet.$word.bcp.mat < src/main/R/ComputeChangePoints.R
-    fi
 
     # Fixup the format so that each datapoint is on it's own line.
     echo "Breakpoint" > $resultDir/tweet.$word.bcp.dat
@@ -109,6 +108,9 @@ for word in $keyWords; do
     # Merge the minute-count data with the change point indicator values.
     paste $resultDir/tweet.$word.minute-counts.dat \
           $resultDir/tweet.$word.bcp.dat > $resultDir/tweet.$word.bcp.splits.dat
+
+    fi
+
     # Convert the changepoint values into group and summary csv files.  We do
     # this for each of the summary methods available.
     for summary in mean median phrase; do

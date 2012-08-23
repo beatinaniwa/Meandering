@@ -1,6 +1,6 @@
 #!/bin/bash
 
-keyWords="gymnastics tennis archery judo fencing swimming"
+keyWords="gymnastics tennis archery judo fencing"
 methods="batch-mean batch-median particle-mean bcp"
 
 run="scala -J-Xmx2g -cp target/TwitterEval-assembly-1.0.0.jar"
