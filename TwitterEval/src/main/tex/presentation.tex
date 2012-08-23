@@ -138,9 +138,11 @@ Similarity Function
 \[
 sim(x_i, x_j) = \lambda^{|t_i - t_j|/\beta} \frac{x_i \cdot x_j}{|x_i||x_j|}
 \]
-}
+{\small
 \textit{Note:} I'm using cosine similarity between tweets, but many other
 metrics like the Jaccard index are equally valid.
+}
+}
 \end{column}
 \begin{column}[2]{5cm}
 Alternate Formulation
@@ -379,10 +381,19 @@ Disadvantages:
 \end{columns}
 \end{frame}
 
+\begin{frame}{HOWEVER!}
+\begin{block}{Batch versions of this method exist}
+The R $bcp$ package provides an easy to use implementation
+\end{block}
+
+% Include screen shot of result of running this on archery and interpret it.
+
+\end{frame}
+
 \subsection{Finding Optimal Summaries}
 
 \begin{frame}[fragile]
-\frametitle{Many ways to summarizing}
+\frametitle{Many Paths to summarizing}
 
 {\fontsize{1}{0}\selectfont
 \begin{verbatim}
@@ -414,7 +425,7 @@ Brilliant performance GBs Larry Godfrey 4th, Alan Wills 42nd, Simon Terry 50th. 
     \begin{enumerate}[<+->]
         \item Select the median of the segment \cite{takamura11SummaryStream}
         \item Select the most average 
-        \item Select sentence with best phrases \cite{nichols12SummarySports}
+        \item Select the sentence with best phrases \cite{nichols12SummarySports}
     \end{enumerate}
 \end{block}
 
@@ -432,17 +443,18 @@ The Median Tweet:
 \[
 \begin{array}{l l}
 \argmax_{x_i} \sum_{x_j} sim(x_i, x_j) \\
-\text{s.t.} z_i = z_j \\
+\text{s.t. } z_i = z_j \\
 \end{array}
 \]
 \end{column}
 
 \begin{column}[2]{5cm}
+The Mean Tweet:
 \[
 \begin{array}{l l}
 \mu_k = \frac{\sum_{x_i} x_i}{|\{z_i = z_k\}|} \\
 \argmax_{x_i} sim(x_i, \mu_k) \\
-\text{s.t.} z_i = z_j = z_k \\
+\text{s.t. } z_i = z_j = z_k \\
 \end{array}
 \]
 \end{column}
@@ -452,14 +464,75 @@ The Median Tweet:
 \end{frame}
 
 \begin{frame}{Selection using a phrase graph}
- % This one is pretty challenging, give it a good description with a few
- % examples.
+\begin{block}{Basic Motivation}
+Mean/Median summary methods ignore word ordering or presence of strong phrases
+\end{block}
+\pause
+Solution: Build a large Phrase Graph
+\includegraphics[width=\textwidth,height=.50\textheight]{example-phrase-graph.pdf}
+\end{frame}
+
+\begin{frame}{How to build a phrase graph}
+\begin{block}{Basic Goals}
+\begin{itemize}
+\item Weighted Nodes represent tokens with frequencies
+\item Directed paths represent full phrases
+\item Key Phrases should have high path weights
+\end{itemize}
+\end{block}
+
+\pause
+
+\begin{columns}
+\begin{column}[1]{5cm}
+Formally: \\
+A Weighted Minimal Acyclic Finite-State Automata \\
+Like a Trie, but compressed at both ends \\
+With extra compression in the middle \\
+\pause
+\end{column}
+\begin{column}[2]{5cm}
+Construction Algorithm\cite{daciuk99incremental}:
+{\tiny
+\begin{algorithm}[H]
+Lexicographically sort $Tweets$ \\
+\For {$tweet \in Tweets$} {
+    $(prefixMatch, suffix) \leftarrow walk(tweet)$ \\
+    $lastState \leftarrow tail(prefixMatch)$ \\
+    \If {$lastState.hasChildren$} {
+        $replace\_or\_register(lastState)$
+    }
+    $add(lastState, suffix)$ \\
+}
+$replace\_or\_register(root)$
+\end{algorithm}
+}
+
+\end{column}
+\end{columns}
 \end{frame}
 
 \section{Results}
 \subsection{Segmentation Results}
 
 \begin{frame}{Testing the segmentation algorithms}
+\begin{block}{Simple Evaluation: Do segments line up with event listings?}
+\begin{itemize}
+\item We may not have detailed listings of game level events, but we know when
+each competition took place
+\item Compare competition times to discovered segment boundaries
+\item Better algorithms should have boundaries closer to competition times
+\end{itemize}
+\end{block}
+
+\begin{table}[h!t!b!]
+\center
+\tiny
+\input{twitter.segmentation.scores.tex}
+\caption{Total Absolute Error between nearest discovered segment and known
+competition times}
+\end{table}
+
 \end{frame}
 
 \subsection{Summarization Results}
