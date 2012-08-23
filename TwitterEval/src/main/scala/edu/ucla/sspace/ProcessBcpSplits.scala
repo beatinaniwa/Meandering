@@ -14,8 +14,6 @@ object ProcessBcpSplits {
 
     def main(args: Array[String]) {
         val converter = TweetModeler.load(args(0), args(1), args(2))
-
-
         val changeIter = Source.fromFile(args(3)).getLines
         var changePointSeconds = changeIter.filter(_.endsWith("1"))
                                            .map(_.split("\\s+")(0).toLong * 60)

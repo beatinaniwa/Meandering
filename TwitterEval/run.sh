@@ -89,34 +89,38 @@ for word in $keyWords; do
         done
     done
 
-    fi
 
     # Now do the processing using bayesian change point analysis.  This is
     # mostly done in R with other codes simply to munge the format into the
     # expected csv files.
 
     # First count the number of tweets per minute in the dataset.
-    $run $base.MinuteCounter $resultDir/$tweet.$sport.english.txt \
-                             $resultDir/tweet.$sport.minute-counts.dat
+    $run $base.MinuteCounter $resultDir/tweet.$word.english.txt \
+                             $resultDir/tweet.$word.minute-counts.dat
     # Next extract the change points for the minutes using bcp.
     R --no-restore --no-save --args \
-        $resultDir/tweet.$sport.minute-counts.dat \
-        $resultDir/tweet.$sport.bcp.mat < src/main/R/ComputeChangePoints.R
+        $resultDir/tweet.$word.minute-counts.dat \
+        $resultDir/tweet.$word.bcp.mat < src/main/R/ComputeChangePoints.R
+
     # Fixup the format so that each datapoint is on it's own line.
-    cat $resultDir/tweet.$sport.bcp.mat | tr " " "\n" > $resultDir/tweet.$sport.bcp.dat
+    echo "Breakpoint" > $resultDir/tweet.$word.bcp.dat
+    cat $resultDir/tweet.$word.bcp.mat | tr " " "\n" >> $resultDir/tweet.$word.bcp.dat
     # Merge the minute-count data with the change point indicator values.
-    paste $resultDir/tweet.$sport.minute-counts.dat \
-          $resultDir/tweet.$sport.bcp.dat > $resultDir/tweet.$sport.bcp.splits.dat
+    paste $resultDir/tweet.$word.minute-counts.dat \
+          $resultDir/tweet.$word.bcp.dat > $resultDir/tweet.$word.bcp.splits.dat
+
+    fi
+
     # Convert the changepoint values into group and summary csv files.  We do
     # this for each of the summary methods available.
     for summary in mean median phrase; do
-        $run.$base.ProcessBcpSplits joint \
-                                    $resultDir/tweet.$sport.token_basis.dat \
-                                    $resultDir/tweet.$sport.ne_basis.dat \
-                                    $resultDir/tweet.$sport.bcp.groups.dat \
-                                    tweet.$sport.bcp.all.groups.csv \ 
-                                    tweet.$sport.bcp.$summary.summary.csv \
+        $run $base.ProcessBcpSplits $featureModel \
+                                    $resultDir/tweet.$word.token_basis.dat \
+                                    $resultDir/tweet.$word.ne_basis.dat \
+                                    $resultDir/tweet.$word.bcp.splits.dat \
+                                    $resultDir/tweet.$word.bcp.all.groups.csv \
+                                    $resultDir/tweet.$word.bcp.all.$summary.summary.csv \
                                     $summary \
-                                    $resultDir/tweet.$sport.part.*.dat
+                                    $resultDir/tweet.$word.part.*.dat
     done
 done

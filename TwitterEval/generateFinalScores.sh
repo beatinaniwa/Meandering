@@ -7,6 +7,8 @@ segmentTex=twitter.segmentation.scores.tex
 
 if [ 0 != 0 ]; then
     echo "Already Run"
+fi
+
 # Run the initial evaluation which compares each segmentation algorithm against
 # known event boundaries for each sport.  since each summarization method will
 # have the same boundaries, we use just the boundaries listed in the mean
@@ -23,7 +25,6 @@ done > $resultDir/$segmentDat
 # Convert that output to an easy to use tex tabular for presentation or paper
 # usage.
 $run $base.FormSegmentationTable $resultDir/$segmentDat false int > src/main/tex/$segmentTex
-fi
 
 for pair in "mean-median" "mean-phrase" "median-phrase"; do
     m1=`echo $pair | cut -d "-" -f 1`
