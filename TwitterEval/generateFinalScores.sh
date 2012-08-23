@@ -31,9 +31,9 @@ for pair in "mean-median" "mean-phrase" "median-phrase"; do
     m2=`echo $pair | cut -d "-" -f 2`
     for sport in $keyWords; do
         for method in $methods; do
-            error=`$run $baase.EvaluateSummaryOverlap \
-                        $resultDir/tweet.$sport.$method.$m1.summary.csv \
-                        $resultDir/tweet.$sport.$method.$m2.summary.csv`
+            error=`$run $base.EvaluateSummaryOverlap \
+                        $resultDir/tweet.$sport.$method.all.$m1.summary.csv \
+                        $resultDir/tweet.$sport.$method.all.$m2.summary.csv`
             echo $sport $method $error
         done
     done > $resultDir/twitter.summary.$pair.dat
