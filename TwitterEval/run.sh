@@ -119,7 +119,7 @@ for word in $keyWords; do
                                     $resultDir/tweet.$word.ne_basis.dat \
                                     $resultDir/tweet.$word.bcp.splits.dat \
                                     $resultDir/tweet.$word.bcp.all.groups.csv \
-                                    $resultDir/tweet.$word.bcp.$summary.summary.csv \
+                                    $resultDir/tweet.$word.bcp.all.$summary.summary.csv \
                                     $summary \
                                     $resultDir/tweet.$word.part.*.dat
     done
