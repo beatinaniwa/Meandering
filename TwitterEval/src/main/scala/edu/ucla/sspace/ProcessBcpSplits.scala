@@ -20,7 +20,7 @@ object ProcessBcpSplits {
                                            .toList
 
         var groupTweets = List[Tweet]()
-        var groupId = 0
+        var groupId = 1
 
         val simFunc = (t1: Tweet, t2: Tweet) => Tweet.sim(t1, t2, lambda, beta, w, sim)
         val summaryMethod = args(6) match {
@@ -41,7 +41,7 @@ object ProcessBcpSplits {
                 val startTime = groupTweets.map(_.timestamp).min
                 val summaryTweet = summaryMethod(groupTweets, converter, simFunc)
                 val meanTime = summaryTweet.timestamp
-                val summary = converter.rawText(summaryTweet).replace("\"", "'")
+                val summary = converter.rawText(summaryTweet).replace("\"", "'").replace(",", ";")
                 summaryWriter.println("%d,%d,%d,%s".format(startTime, meanTime, groupId, summary))
 
                 changePointSeconds = changePointSeconds.tail

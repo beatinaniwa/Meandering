@@ -2,8 +2,10 @@
 
 source ./config.sh
 
-segmentDat=twitter.segmentation.scores.dat
-segmentTex=twitter.segmentation.scores.tex
+label=tweet
+outLabel=twitter
+segmentDat=$outLabel.segmentation.scores.dat
+segmentTex=$outLabel.segmentation.scores.tex
 
 if [ 0 != 0 ]; then
     echo "Already Run"
@@ -16,7 +18,7 @@ fi
 for sport in $keyWords; do
     for method in $methods; do
         error=`$run $base.EvaluateSegmentsAgainstEvents \
-                    $resultDir/tweet.$sport.$method.all.mean.summary.csv \
+                    $resultDir/$label.$sport.$method.all.mean.summary.csv \
                     $resultDir/olympics.$sport.times.dat `
         echo $sport $method $error
     done
@@ -24,7 +26,9 @@ done > $resultDir/$segmentDat
 
 # Convert that output to an easy to use tex tabular for presentation or paper
 # usage.
-$run $base.FormSegmentationTable $resultDir/$segmentDat false int > src/main/tex/$segmentTex
+$run $base.FormSegmentationTable \
+    $resultDir/$segmentDat \
+    false double > src/main/tex/$segmentTex
 
 # Compute the amount of raw agreement between each summarization method using
 # the same segmentation algorithm.
@@ -34,15 +38,15 @@ for pair in "mean-median" "mean-phrase" "median-phrase"; do
     for sport in $keyWords; do
         for method in $methods; do
             error=`$run $base.EvaluateSummaryOverlap \
-                        $resultDir/tweet.$sport.$method.all.$m1.summary.csv \
-                        $resultDir/tweet.$sport.$method.all.$m2.summary.csv`
+                        $resultDir/$label.$sport.$method.all.$m1.summary.csv \
+                        $resultDir/$label.$sport.$method.all.$m2.summary.csv`
             echo $sport $method $error
         done
-    done > $resultDir/twitter.summary.$pair.dat
+    done > $resultDir/$outLabel.summary.$pair.dat
 
     $run $base.FormSegmentationTable \
-        $resultDir/twitter.summary.$pair.dat \
-        false double > src/main/tex/twitter.summary.$pair.tex
+        $resultDir/$outLabel.summary.$pair.dat \
+        false double > src/main/tex/$outLabel.summary.$pair.tex
 done
 
 # Compute the percentage of duplicate summaries within each complete systems
@@ -51,12 +55,12 @@ for summary in mean median phrase; do
     for sport in $keyWords; do
         for method in $methods; do
             error=`$run $base.EvaluateSummaryDuplicates \
-                        $resultDir/tweet.$sport.$method.all.$summary.summary.csv`
+                        $resultDir/$label.$sport.$method.all.$summary.summary.csv`
             echo $sport $method $error
         done
-    done > $resultDir/twitter.duplicate.$summary.dat
+    done > $resultDir/$outLabel.duplicate.$summary.dat
 
     $run $base.FormSegmentationTable \
-        $resultDir/twitter.duplicate.$summary.dat \
-        false double > src/main/tex/twitter.duplicate.summary.tex
+        $resultDir/$outLabel.duplicate.$summary.dat \
+        false double > src/main/tex/$outLabel.duplicate.summary.tex
 done

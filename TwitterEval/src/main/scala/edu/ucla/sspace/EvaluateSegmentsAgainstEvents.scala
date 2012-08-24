@@ -12,7 +12,7 @@ object EvaluateSegmentsAgainstEvents {
         val eventList = Source.fromFile(args(1)).getLines.map(_.toLong).toSet.toList.sorted
 
         val segmentError = eventList.map(event => abs(event - findBestSegment(event, segmentList.head, segmentList.tail))).sum
-        println(segmentError)
+        printf("%.03f\n", segmentError/eventList.size.toDouble)
     }
 
     def findBestSegment(eventTime: Long, bestTime: Long, segmentList: List[Long]) : Long =
