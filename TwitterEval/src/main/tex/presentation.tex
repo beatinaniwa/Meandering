@@ -70,46 +70,46 @@
 
 \subsection{The General Framework}
 
-\begin{frame}{The General Framework}
+\begin{frame}
+\frametitle<1>{The General Framework}
+\frametitle<2->{Summarizing the true problem}
 
 \includegraphics[width=\textwidth,height=.50\textheight]{tweet-archery-example.pdf}
 
+\begin{overlayarea}{\textwidth}{3.3cm}
+
+\only<1>{
 \begin{block}{Summarization Steps}
   \begin{enumerate}
       \item Segment time series of tweets
       \item Find most descriptive summary of each segment
   \end{enumerate}
 \end{block}
-
-\end{frame}
-
-\subsection{Segmenting The Time Series}
-
-\begin{frame}{Summarizing the true problem}
-
-\includegraphics[width=\textwidth,height=.50\textheight]{tweet-archery-example.pdf}
-
-\only<-3>{
+}
+\only<2-4>{
 \begin{block}{Segmentation goals}
-    \begin{enumerate}[<+->]
+    \begin{enumerate}[<+(1)->]
         \item Segments are ordered along time
         \item Segments represent moments of similar activity
         \item Segmentation is \textit{Change Point Analysis}
     \end{enumerate}
 \end{block}
 }
-\only<4->{
+\only<5->{
 \begin{block}{Segmentation methods}
-    \begin{enumerate}[<+->]
+    \begin{enumerate}[<+(4)->]
         \item The Budgeted Median method \cite{takamura11SummaryStream}
         \item Modified Budgeted Median Method
         \item A basic online Particle Filter
-        \item Bayesian on-line changepoint detection \cite{caron11onlineDetection}
+        \item Bayesian Changepoint detection \cite{caron11onlineDetection}
     \end{enumerate}
 \end{block}
 }
+\end{overlayarea}
 
 \end{frame}
+
+\subsection{Segmentation Methods}
 
 \begin{frame}{The Budgeted Median Method}
 
@@ -117,9 +117,10 @@
 Segment the time series by minimizing \textit{conductance}.
 \end{block}
 
-\begin{columns}
+\begin{columns}[t]
 \begin{column}[1]{3.5cm}
-\only<1>{
+\begin{overprint}
+\onslide<1>\begin{center}{
 Original Formulation
 \[
 \begin{array}{r c l }
@@ -132,19 +133,22 @@ s.t. & z_{ij} \leq x_i & \forall i,j \\
 & z_{ij} \in \{0,1\} & \forall i,j \\
 \end{array}
 \]
-}
-\only<2>{
+}\end{center}
+\onslide<2>\begin{center}{
 Similarity Function
 \[
 sim(x_i, x_j) = \lambda^{|t_i - t_j|/\beta} \frac{x_i \cdot x_j}{|x_i||x_j|}
 \]
-{\small
+{\tiny
 \textit{Note:} I'm using cosine similarity between tweets, but many other
 metrics like the Jaccard index are equally valid.
 }
-}
+}\end{center}
+\end{overprint}
 \end{column}
+
 \begin{column}[2]{5cm}
+\begin{center}
 Alternate Formulation
 \[
 \begin{array}{r c l }
@@ -154,7 +158,7 @@ s.t. & z_{i-1} \leq z_i \leq z_{i+1} & \\
 & \forall z_i = z_k = j & \\
 \end{array}
 \]
-
+\end{center}
 \end{column}
 \end{columns}
 
@@ -194,7 +198,7 @@ Tweets are sparse, therefor $sim(x,y)$ will likely result in $0$.
 Let $\mu_k$ be the \textit{average tweet} within a group.  \\
 This makes it a Budgeted Mean problem.
 
-\begin{columns}
+\begin{columns}[t]
 \begin{column}[1]{3.5cm}
 Similarity Function
 \[
@@ -252,14 +256,17 @@ Handle each data point only \textit{once}
 
 \pause
 
-\begin{columns}
+\begin{columns}[t]
 \begin{column}[1]{5cm}
 
 \begin{itemize}
 \item The Dirichlet Process handles this well
-\item Adjust each particle by adding a new segment or updating last existing
-segment with new data point
-\item Should include a regularization term to limit number of new particles
+\item Adjust each particle by:
+\begin{itemize}
+    \item adding new segment 
+    \item updating last segment
+\end{itemize}
+\item Should regularize to limit number of particles
 \end{itemize}
 \end{column}
 
@@ -300,7 +307,7 @@ $particle_k \leftarrow (\theta, \{\})$ \\
 \end{block}
 
 Depends on two key distributions:
-\begin{columns}
+\begin{columns}[t]
 
 \begin{column}[1]{5cm}
 Probability of new assignment:
@@ -356,7 +363,7 @@ $particle^k \leftarrow (\{\})$ \\
 \end{frame}
 
 \begin{frame}{Advantages And Disadvantages}
-\begin{columns}
+\begin{columns}[t]
 \begin{column}[1]{5cm}
 Advantages:
 \begin{itemize}
@@ -436,7 +443,7 @@ Brilliant performance GBs Larry Godfrey 4th, Alan Wills 42nd, Simon Terry 50th. 
 The representative tweet for a segment also represents the summary of the segment
 \end{block}
 
-\begin{columns}
+\begin{columns}[t]
 
 \begin{column}[1]{5cm}
 The Median Tweet:
@@ -483,7 +490,7 @@ Solution: Build a large Phrase Graph
 
 \pause
 
-\begin{columns}
+\begin{columns}[t]
 \begin{column}[1]{5cm}
 Formally: \\
 A Weighted Minimal Acyclic Finite-State Automata \\
@@ -525,17 +532,29 @@ each competition took place
 \end{itemize}
 \end{block}
 
+\only<1>{
 \begin{table}[h!t!b!]
 \center
 \tiny
 \input{twitter.segmentation.scores.tex}
 \caption{Total Absolute Error between nearest discovered segment and known
-competition times}
+competition times when using only time}
 \end{table}
+}
+\only<2>{
+\begin{table}[h!t!b!]
+\center
+\tiny
+\input{twitter.segmentation.scores.tex}
+\caption{Total Absolute Error between nearest discovered segment and known
+competition times when using time and semantics}
+\end{table}
+}
 
 \end{frame}
 
 \subsection{Summarization Results}
+
 \begin{frame}{Finding differences between summary methods}
 \begin{block}{How distinct are the summarization methods?}
 \begin{itemize}
@@ -570,13 +589,36 @@ competition times}
 \end{frame}
 
 \section{Deeper thoughts}
+
 \subsection{Handling Twitter}
-\begin{frame}{Observations from Twitter}
+
+\begin{frame}{Observations on Twitter}
+
+\begin{block}{Current results are unsatisfying}
+\begin{itemize}
+\item Retweets flood the summary system
+\item High Frequency but non-event tweets still appear
+\item Event detection is still relatively week
+\item Requires \textbf{heavy} filtering: language, topic, tokens, etc.
+\end{itemize}
+\end{block}
+
+\pause
+
+\begin{block}{A more sophisticated approach}
+\begin{enumerate}
+\item Build a general classifier to separate event and personal tweets
+\item How to do this in a language/sport/topic manner?
+\item Include event score in segmentation similarity method
+\item Use non-even tweets just for tweet volume statistics
+\end{enumerate}
+\end{block}
 \end{frame}
 
 \section{Bibliography}
 
-\begin{frame}
+\begin{frame}{Bibliography}
+\tiny
 \bibliographystyle{acm}
 \bibliography{presentation}
 \end{frame}
