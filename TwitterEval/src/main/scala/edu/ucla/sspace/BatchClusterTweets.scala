@@ -11,7 +11,7 @@ import java.io.PrintWriter
 object BatchClusterTweets {
     val lambda = 0.5
     val beta = 100
-    val w = (0.45, 0.45, 0.10)
+    val w = (1.0, 0d, 0d) //(0.45, 0.45, 0.10)
     val simFunc = new CosineSimilarity()
     var useMedian = false 
     var counter = 300
@@ -45,10 +45,11 @@ object BatchClusterTweets {
         printf("Processing [%d] tweets\n", tweets.size)
 
         val k = numGroups
-        val assignments = Array.fill(tweets.size)(-1)
         // Extract a random set of tweets to act as medians.
         var medianList = selectMedians(tweets, k)
-        var medianUpdated = medianList.size > k
+        var medianUpdated = medianList.size == k
+        val assignments = if (medianUpdated) Array.fill(tweets.size)(-1)
+                          else (0 until medianList.size).toArray
 
         while (medianUpdated && counter > 0) {
             printf("Starting iteration [%d]\n", counter)

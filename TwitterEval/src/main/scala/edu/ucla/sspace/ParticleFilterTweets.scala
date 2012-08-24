@@ -41,8 +41,8 @@ object ParticleFilterTweets {
     // Create a similarity method for comparing feature representations of tweets.
     val simFunc = new CosineSimilarity()
     // Create a set of weights for the tweet similarity function.  These should sum to 1.
-    val w = (0.45, 0.45, .1)
-    val ws = (0.45, 0.40, 0.05)
+    val w = (1.0, 0d, 0d) //(0.45, 0.45, .1)
+    val ws = w //(0.45, 0.40, 0.05)
 
     // Specify the number of particles to create.
     val nParticles = 100
