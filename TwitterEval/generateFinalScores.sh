@@ -26,6 +26,8 @@ done > $resultDir/$segmentDat
 # usage.
 $run $base.FormSegmentationTable $resultDir/$segmentDat false int > src/main/tex/$segmentTex
 
+# Compute the amount of raw agreement between each summarization method using
+# the same segmentation algorithm.
 for pair in "mean-median" "mean-phrase" "median-phrase"; do
     m1=`echo $pair | cut -d "-" -f 1`
     m2=`echo $pair | cut -d "-" -f 2`
@@ -41,4 +43,20 @@ for pair in "mean-median" "mean-phrase" "median-phrase"; do
     $run $base.FormSegmentationTable \
         $resultDir/twitter.summary.$pair.dat \
         false double > src/main/tex/twitter.summary.$pair.tex
+done
+
+# Compute the percentage of duplicate summaries within each complete systems
+# output.
+for summary in mean median phrase; do
+    for sport in $keyWords; do
+        for method in $methods; do
+            error=`$run $base.EvaluateSummaryDuplicates \
+                        $resultDir/tweet.$sport.$method.all.$summary.summary.csv`
+            echo $sport $method $error
+        done
+    done > $resultDir/twitter.duplicate.$summary.dat
+
+    $run $base.FormSegmentationTable \
+        $resultDir/twitter.duplicate.$summary.dat \
+        false double > src/main/tex/twitter.duplicate.summary.tex
 done
