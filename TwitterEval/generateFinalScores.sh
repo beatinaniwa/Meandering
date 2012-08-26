@@ -2,8 +2,8 @@
 
 source ./config.sh
 
-label=tweet
-outLabel=twitter
+label=tweet-t
+outLabel=twitter-t
 segmentDat=$outLabel.segmentation.scores.dat
 segmentTex=$outLabel.segmentation.scores.tex
 

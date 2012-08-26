@@ -11,7 +11,7 @@ import java.io.PrintWriter
 object BatchClusterTweets {
     val lambda = 0.5
     val beta = 100
-    val w = (1.0, 0d, 0d) //(0.45, 0.45, 0.10)
+    val w = (0.45, 0.45, 0.10)
     val simFunc = new CosineSimilarity()
     var useMedian = false 
     var counter = 300

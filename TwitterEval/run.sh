@@ -52,8 +52,8 @@ for word in $keyWords; do
                                           $resultDir/tweet.$word.token_basis.dat \
                                           $resultDir/tweet.$word.ne_basis.dat \
                                           $summariesPerDay \
-                                          $resultDir/tweet-t.$word.batch-$method.$partId.groups.dat \
-                                          $resultDir/tweet-t.$word.batch-$method.$partId.summary.dat \
+                                          $resultDir/tweet.$word.batch-$method.$partId.groups.dat \
+                                          $resultDir/tweet.$word.batch-$method.$partId.summary.dat \
                                           $featureModel $method
         done
 
@@ -61,8 +61,8 @@ for word in $keyWords; do
         $run $base.ParticleFilterTweets $part \
                                         $resultDir/tweet.$word.token_basis.dat \
                                         $resultDir/tweet.$word.ne_basis.dat \
-                                        $resultDir/tweet-t.$word.particle-mean.$partId.groups.dat \
-                                        $resultDir/tweet-t.$word.particle-mean.$partId.summary.dat \
+                                        $resultDir/tweet.$word.particle-mean.$partId.groups.dat \
+                                        $resultDir/tweet.$word.particle-mean.$partId.summary.dat \
                                         $featureModel 
     done
 
@@ -74,8 +74,8 @@ for word in $keyWords; do
                                            $resultDir/tweet.$word.token_basis.dat \
                                            $resultDir/tweet.$word.ne_basis.dat \
                                            $part \
-                                           $resultDir/tweet-t.$word.$method.$partId.groups.dat \
-                                           $resultDir/tweet-t.$word.$method.$partId.$summary.summary.dat \
+                                           $resultDir/tweet.$word.$method.$partId.groups.dat \
+                                           $resultDir/tweet.$word.$method.$partId.$summary.summary.dat \
                                            $summary
             done
         done
@@ -87,7 +87,7 @@ for word in $keyWords; do
         $run $base.MergeDayGroupLists $resultDir/tweet.$word.$method.*.groups.dat > $resultDir/tweet.$word.$method.all.groups.csv
         for summary in mean median phrase; do
             $run $base.MergeDaySplitsLists \
-                $resultDir/tweet-t.$word.$method.*.$summary.summary.dat > $resultDir/tweet-t.$word.$method.all.$summary.summary.csv
+                $resultDir/tweet.$word.$method.*.$summary.summary.dat > $resultDir/tweet.$word.$method.all.$summary.summary.csv
         done
     done
 
@@ -119,8 +119,8 @@ for word in $keyWords; do
                                     $resultDir/tweet.$word.token_basis.dat \
                                     $resultDir/tweet.$word.ne_basis.dat \
                                     $resultDir/tweet.$word.bcp.splits.dat \
-                                    $resultDir/tweet-t.$word.bcp.all.groups.csv \
-                                    $resultDir/tweet-t.$word.bcp.all.$summary.summary.csv \
+                                    $resultDir/tweet.$word.bcp.all.groups.csv \
+                                    $resultDir/tweet.$word.bcp.all.$summary.summary.csv \
                                     $summary \
                                     $resultDir/tweet.$word.part.*.dat
     done
