@@ -120,7 +120,7 @@ Segment the time series by minimizing \textit{conductance}.
 \begin{columns}[t]
 \begin{column}[1]{3.5cm}
 \begin{overprint}
-\onslide<1>\begin{center}{
+\onslide<1-2>\begin{center}{
 Original Formulation
 \[
 \begin{array}{r c l }
@@ -134,7 +134,7 @@ s.t. & z_{ij} \leq x_i & \forall i,j \\
 \end{array}
 \]
 }\end{center}
-\onslide<2>\begin{center}{
+\onslide<3>\begin{center}{
 Similarity Function
 \[
 sim(x_i, x_j) = \lambda^{|t_i - t_j|/\beta} \frac{x_i \cdot x_j}{|x_i||x_j|}
@@ -149,6 +149,7 @@ metrics like the Jaccard index are equally valid.
 
 \begin{column}[2]{5cm}
 \begin{center}
+\only<2-3>{
 Alternate Formulation
 \[
 \begin{array}{r c l }
@@ -158,6 +159,7 @@ s.t. & z_{i-1} \leq z_i \leq z_{i+1} & \\
 & \forall z_i = z_k = j & \\
 \end{array}
 \]
+}
 \end{center}
 \end{column}
 \end{columns}
@@ -306,6 +308,8 @@ $particle_k \leftarrow (\theta, \{\})$ \\
 \end{itemize}
 \end{block}
 
+\pause
+
 Depends on two key distributions:
 \begin{columns}[t]
 
@@ -346,10 +350,10 @@ $particle^k \leftarrow (\{\})$ \\
                             \sum_j^K f_{\theta}(i |  z_{i-1}^j) 
                             w^j$ \\
 
-    $\hat{alpha}^k \leftarrow \hat{w}^k 
+    $\hat{\alpha}^k \leftarrow \hat{w}^k 
                               [ \nabla log(g_{\theta}(x_i | z_{i-1}^k))  +
                                 \nabla log(f_{\theta}(z_{i-1}^k, z_{i-1}^k))]$ \\
-    $\hat{alpha}^n \leftarrow g_{\theta}(x_i | i)
+    $\hat{\alpha}^n \leftarrow g_{\theta}(x_i | i)
                               (\sum_j^K f_{\theta}(i |  z_{i-1}^j) w^j
                                [ \nabla log( g_{\theta}(x_i | i) ) +
                                  \nabla log(f_{\theta}(i |  z_{i-1}^j))] + 
@@ -380,7 +384,6 @@ Disadvantages:
 \item Selecting $H(t)$ and $p(t_i, t_j)$ can be challenging
 \item Taking the gradient of $f$ and $g$ can be difficult
 \item Implementation is difficult
-\item Limited to discrete time steps
 \item Relatively new and untested in most domains
 \end{itemize}
 \end{column}
@@ -536,7 +539,7 @@ each competition took place
 \begin{table}[h!t!b!]
 \center
 \tiny
-\input{twitter.segmentation.scores.tex}
+\input{twitter-t.segmentation.scores.tex}
 \caption{Total Absolute Error between nearest discovered segment and known
 competition times when using only time}
 \end{table}
@@ -583,7 +586,7 @@ competition times when using time and semantics}
 \center
 \tiny
 \input{twitter.summary.median-phrase.tex}
-\caption{Comparing the MedianMethod to the Phrase Method}
+\caption{Comparing the Median Method to the Phrase Method}
 \end{table}
 }
 \end{frame}
@@ -607,10 +610,11 @@ competition times when using time and semantics}
 
 \begin{block}{A more sophisticated approach}
 \begin{enumerate}
-\item Build a general classifier to separate event and personal tweets
-\item How to do this in a language/sport/topic manner?
+\item Build a general classifier to separate event and personal tweets\footnote{
+How to do this in a language/sport/topic manner?}
 \item Include event score in segmentation similarity method
-\item Use non-even tweets just for tweet volume statistics
+\item Use non-event tweets just for tweet volume statistics
+\item Center summaries around named entities.
 \end{enumerate}
 \end{block}
 \end{frame}
