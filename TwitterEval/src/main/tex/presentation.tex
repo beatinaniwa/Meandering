@@ -589,6 +589,15 @@ competition times when using time and semantics}
 \caption{Comparing the Median Method to the Phrase Method}
 \end{table}
 }
+\only<4>{
+\begin{table}[h!t!b!]
+\center
+\tiny
+\input{twitter.duplicate.summary.tex}
+\caption{Percentage of duplicate summaries for each method}
+\end{table}
+}
+
 \end{frame}
 
 \section{Deeper thoughts}
@@ -617,6 +626,16 @@ How to do this in a language/sport/topic manner?}
 \item Center summaries around named entities.
 \end{enumerate}
 \end{block}
+\end{frame}
+
+\begin{frame}{Suggested Improvements}
+\begin{enumerate}
+\item Build a better sport filter algorithm. 
+\item Do user graph analysis to determine most important user and pick summaries
+from them.
+\item Clean the selected summary tweet more heavily.
+\item Lower importance of a tweet if it was reported at a previous time segment
+as the event already happened
 \end{frame}
 
 \section{Bibliography}
